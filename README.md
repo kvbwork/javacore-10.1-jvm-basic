@@ -84,7 +84,7 @@ public class JvmComprehension {
 #### Строка 5: `Integer uselessVar = 700;` [main]->[printAll]
 
 - В куче создан `new Integer(700)` [03:Integer]
-- Во фрейм `printAll()` добавлена ссылка `Integer uselessVar` = [03]
+- Во фрейм `printAll()` добавлена ссылка `Integer uselessVar` = [03:Integer]
 
 > Так как объект нигде не используется, то при оптимизации компилятором он может быть выброшен из кода.
 
@@ -107,7 +107,7 @@ public class JvmComprehension {
         - Вызывается метод `String.valueOf(int)`, результат [06:String] заносится в кучу.
         - Во фрейм помещена анонимная ссылка [06:String]
       - Вызов метода `[04:StringBuilder].append([06:String])`
-      - Получение 'ii':
+      - Получение `ii`:
         - Вызывается метод `[02:Integer].toString()`, результат [07:String] заносится в кучу.
         - Во фрейм помещена анонимная ссылка [07:String]
       - Вызов метода `[04:StringBuilder].append([07:String])`
@@ -123,8 +123,9 @@ public class JvmComprehension {
   - Удаляется фрейм `printAll()`:
     - Удаляются ссылки вместе с значениями переменных:
       - Object o, int i, Integer ii, Integer uselessVar
-    - Следующие объекты станут доступны сборщику мусора т.к. потеряют ссылки на себя:
+    - Следующие объекты в куче потеряют жесткие ссылки и станут доступны сборщику мусора:
       - [03:Integer], [04:StringBuilder], [05:String], [06:String], [07:String], [08:String]
+    - В блоке main() еще остаются ссылки на объекты [01:Object] и [02:Integer], поэтому сборщик мусора не сможет их удалить после завершения printAll().
 - Метод ничего не возвращает, новых записей во фрейме `main()` не появится
   
 #### Строка 7: `System.out.println("finished");` [main]
@@ -134,7 +135,7 @@ public class JvmComprehension {
 - Во фрейм помещена анонимная ссылка [09:String]
 - Вызов метода `[sys:PrintWriter].println([09:String])`
   - Вывод на экран текста `finished` из [09:String].
-  - Метод ничего не возаращает.
+  - Метод ничего не возвращает.
 
 #### Строка 8: [main]
 
