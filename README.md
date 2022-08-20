@@ -47,26 +47,26 @@ public class JvmComprehension {
   - Интерпретатор получил название класса для выполнения и ищет в нем публичную статичную функцию `main(String[])`.
   - Если функция найдена, то начинается исполнение.
   
-#### Строка 0: Запуск функции `main()` ^new [main]^
+#### Строка 0: Запуск функции `main()` new [main]
 
 - В стеке создается новый фрейм функции `main()`.
   - Если в командной строке были переданы аргументы, то во фрейм добавляется ссылка `args` на массив `String[]` в куче.
 
-#### Строка 1: `int i = 1;` ^[main]^
+#### Строка 1: `int i = 1;` [main]
 
 - Во фрейм `main()` добавлено значение `int i = 1`
 
-#### Строка 2: `Object o = new Object();` ^[main]^
+#### Строка 2: `Object o = new Object();` [main]
 
 - В куче создан `new Object()`[01:Object].
 - Во фрейм `main()` добавлена ссылка `Object o` = [01:Object]
 
-#### Строка 3: `Integer ii = 2;` ^[main]^
+#### Строка 3: `Integer ii = 2;` [main]
 
 - В куче должен быть создан `new Integer(2)`. Но сработает оптимизация и мы получим объект из пула [02:Integer]
 - Во фрейм `main()` добавлена ссылка `Integer ii` = [02:Integer]
 
-#### Строка 4: `printAll(o, i, ii);` ^[main]^
+#### Строка 4: `printAll(o, i, ii);` [main]
 
 - В стек добавлены аргументы для вызова функции:
   - ссылка на [01:Object]
@@ -74,21 +74,21 @@ public class JvmComprehension {
   - ссылка на [02:Integer]
 - Вызов метода `printAll([01:Object], 1:int, [02:Integer])` заберет из стека аргументы и передаст управление
 
-#### Строка 4.1: `printAll(Object o, int i, Integer ii)` ^[main]->new [printAll]^
+#### Строка 4.1: `printAll(Object o, int i, Integer ii)` [main]->new [printAll]
   
   - В стеке создан новый фрейм `printAll()`
   - Добавлена ссылка `Object o` = [01:Object]
   - Добавлено значение `int i = 1`
   - Добавлена ссылка `Integer ii` = [02:Integer]
 
-#### Строка 5: `Integer uselessVar = 700;` ^[main]->[printAll]^
+#### Строка 5: `Integer uselessVar = 700;` [main]->[printAll]
 
 - В куче создан `new Integer(700)` [03:Integer]
 - Во фрейм `printAll()` добавлена ссылка `Integer uselessVar` = [03]
 
 > Так как объект нигде не используется, то при оптимизации компилятором он может быть выброшен из кода.
 
-#### Строка 6: `System.out.println(o.toString() + i + ii);` ^[main]->[printAll]^
+#### Строка 6: `System.out.println(o.toString() + i + ii);` [main]->[printAll]
 
 > Начиная с Java 9 конкатенация строк не проводится напрямую через StringBuilder. Для будущих оптимизаций используются `invokedynamic` вызовы к `java.lang.invoke.StringConcatFactory`. Для наглядности описывается старый метод и пропускаются шаги создания фреймов стека для вызова системных методов.
 >
@@ -111,13 +111,13 @@ public class JvmComprehension {
         - Вызывается метод `[02:Integer].toString()`, результат [07:String] заносится в кучу.
         - Во фрейм помещена анонимная ссылка [07:String]
       - Вызов метода `[04:StringBuilder].append([07:String])`
-  - Вызов метода `[04:StringBuilder].toString()`, результат 'new String()' [08:String] помещен в кучу.
+  - Вызов метода `[04:StringBuilder].toString()`, результат [08:String] помещен в кучу.
   - Во фрейм помещена анонимная ссылка [08:String] с результатом конкатенации.
 - Получена анонимная ссылка на объект `System.out` [sys:PrintWriter]
 - Вызов метода `[sys:PrintWriter].println([08:String])`
   - Вывод на экран текста из [08:String], вида `java.lang.Object@43a2584812`. Где последние символы соответствуют `1`= i:int, `2`=ii:Integer
 
-#### Строка 6.1: ^[main]->[printAll]^
+#### Строка 6.1: [main]->[printAll]
 
 - Происходит завершение метода
   - Удаляется фрейм `printAll()`:
@@ -127,7 +127,7 @@ public class JvmComprehension {
       - [03:Integer], [04:StringBuilder], [05:String], [06:String], [07:String], [08:String]
 - Метод ничего не возвращает, новых записей во фрейме `main()` не появится
   
-#### Строка 7: `System.out.println("finished");` ^[main]^
+#### Строка 7: `System.out.println("finished");` [main]
 
 - Получена анонимная ссылка на объект [sys:PrintWriter]
 - Если в пуле строк нет такой записи, то в куче будет создан `new String("finished")` [09:String].
@@ -136,7 +136,7 @@ public class JvmComprehension {
   - Вывод на экран текста `finished` из [09:String].
   - Метод ничего не возаращает.
 
-#### Строка 8: ^[main]^
+#### Строка 8: [main]
 
 - В стеке находится фрейм `main()`. Он содержит:
   - ссылку на аргументы `String[] args`
@@ -150,7 +150,7 @@ public class JvmComprehension {
     - Соответствующие объекты в куче станут доступны сборщику мусора
   - Удалена анонимная ссылка `System.out` но объект [sys:PrintWriter] является общим и системным для среды выполнения.
 
-#### Завершение программы: ^[]^
+#### Завершение программы: []
 
 - Стек пуст, выполнять нечего.
 - JVM очищает использованные ресурсы и возвращает их операционной системе
